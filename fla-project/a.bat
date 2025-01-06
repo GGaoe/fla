@@ -9,7 +9,7 @@ if %errorlevel% neq 0 (
 )
 
 REM 运行生成的可执行文件
-.\fla.exe ..\pda\anbn.pda 11011
+.\fla.exe ..\pda\anbn.pda aaabbb
 
 REM 暂停以查看输出
 pause

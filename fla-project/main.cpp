@@ -3,6 +3,7 @@
 #include <string>
 #include <cstring>
 #include <sstream>
+#include <stack>
 using namespace std;
 
 bool dealType=0;//0表示PDA，1表示TM
@@ -23,6 +24,8 @@ char startStack;
 
 int acceptStateNum=0;
 string acceptingStates[10000];
+
+std::stack<char> PDAstack;
 
 int transitionNum=0;
 string transitions[10000][5];
@@ -146,6 +149,93 @@ void read_test(){
     }
 }
 
+int input_check(string inputString){
+    for(int i=0; i<inputString.length(); i++){
+        bool flag = false;
+        for(int j=0; j<inputAlphabetNum; j++){
+            if(inputString[i] == inputAlphabet[j]){
+                flag = true;
+                break;
+            }
+        }
+        if(!flag){
+            return i;
+        }
+    }
+    return -1;
+}
+
+void PDAid(string inputString, int pointer, string currentState){
+    cout<<"STEP:"<<pointer<<endl;
+    cout<<"STATE:"<<currentState<<endl;
+    cout<<"INPUT:";
+    for(int i=pointer; i<inputString.length(); i++){
+        cout<<inputString[i];
+    }
+    cout<<endl;
+    //输出栈的内容
+    cout<<"STACK:";
+    std::stack<char> temp;
+    // 遍历栈
+        while (!PDAstack.empty()) {
+            char topElement = PDAstack.top();
+            PDAstack.pop();
+            std::cout << topElement;
+
+            // 将元素推入临时栈中
+            temp.push(topElement);
+        }
+        cout<<endl;
+
+        // 如果需要，将元素从临时栈移回原始栈
+        while (!temp.empty()) {
+            PDAstack.push(temp.top());
+            temp.pop();
+        }
+    cout<<"---------------------------------------------"<<endl;
+}
+
+bool PDA_run(string inputString){
+    PDAstack.push(startStack);
+    string currentState = startState;
+    for(int pointer = 0; pointer <= inputString.length(); pointer++){
+        //输出一个即时描述
+        PDAid(inputString, pointer, currentState);
+        char currentInput = inputString[pointer];
+        if(pointer == inputString.length()){
+            currentInput = '_';
+        }
+        bool flag = false;
+        if(PDAstack.empty()){
+            return false;
+        }
+        for(int i=0; i<transitionNum&&!flag; i++){
+            if(transitions[i][0] == currentState && transitions[i][1][0] == currentInput && transitions[i][2][0] == PDAstack.top()){
+                flag = true;
+                currentState = transitions[i][3];
+                PDAstack.pop();
+                if(transitions[i][4] == "_"){
+                    continue;
+                }
+                else{ 
+                    for(int j=transitions[i][4].length()-1; j>=0; j--){
+                        PDAstack.push(transitions[i][4][j]);
+                    }
+                }
+            }
+        }
+    }
+    PDAid(inputString, inputString.length()+1, currentState);
+    for(int i=0; i<acceptStateNum; i++){
+        if(currentState == acceptingStates[i]){
+            return true;
+        }
+    }
+    return false;
+}
+
+
+
 int main(int argc, char* argv[]){
     if(argc != 3){
         return 1;//参数错误
@@ -157,11 +247,9 @@ int main(int argc, char* argv[]){
 
     //根据文件名判断是PDA还是TM
     if(argv[argc-2][strlen(argv[1])-1] == 'a'){
-        //cout<<"PDA"<<endl;
         dealType = 0;
     }
     else {
-        //cout<<"TM"<<endl;
         dealType = 1;
     }
 
@@ -178,7 +266,37 @@ int main(int argc, char* argv[]){
     }
 
     //读取测试
-    read_test();
+    //read_test();
+
+    //输入检查
+    int check= input_check(inputString);
+    if (check != -1){
+        cout<<"Input: "<<inputString<<endl<<"==================== ERR ===================="<<endl;
+        cout<<"error: '"<<inputString[check];
+        cout<<"' was not declared in the set of input symbols"<<endl<<"Input: ";
+        cout<<inputString<<endl;
+        for(int i=0; i<check+7; i++){
+            cout<<" ";
+        }
+        cout<<"^"<<endl;
+        cout<<"==================== END ===================="<<endl;
+        return 1;
+    }
+    else{
+        cout<<"Input: "<<inputString<<endl;
+        cout<<"==================== RUN ===================="<<endl;
+    }
+
+    //PDA运行
+    if(dealType == 0){
+        if(PDA_run(inputString)){
+            cout<<"Result: Accept"<<endl;
+        }
+        else{
+            cout<<"Result: Reject"<<endl;
+        }
+        cout<<"==================== END ===================="<<endl;
+    }
 
     
     return 0;
