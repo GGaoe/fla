@@ -20,7 +20,7 @@ char inputAlphabet[10000];
 int stackAlphabetNum=0;
 char stackAlphabet[10000];
 
-string startState;
+string startState="";
 
 char startStack;
 
@@ -44,7 +44,7 @@ int tapePointer[11][2];//0表示左端点，1表示右端点
 
 int pointer[11];
 
-void clean_Annotation(string* s){//去掉注释
+void clean_Annotation(string* s){//去掉注释以及末尾空格
     size_t start = s->find(";");
     if (start != string::npos) {
         *s = s->substr(0, start);
@@ -52,7 +52,8 @@ void clean_Annotation(string* s){//去掉注释
     int len = s->length()-1;
     for(int i=len; i>=0; i--){
         if((*s)[i] == ' '){
-            *s = s->substr(0, i-1);
+            if(i==0) *s = "";
+            else *s = s->substr(0, i-1);
         }
         else{
             break;
@@ -315,6 +316,17 @@ int abs(int a){
     return a>0?a:-a;
 }
 
+int find_digit(int x){
+    if(x < 0) x = -x;
+    if(x == 0) return 1;
+    int digit = 0;
+    while(x!=0){
+        x /= 10;
+        digit++;
+    }
+    return digit;
+}
+
 void TMid(string state,int step){
     //输出一个即时描述
 
@@ -361,19 +373,28 @@ void TMid(string state,int step){
         else{
             if(pointer[i] < tapePointer[i][0]){
                 for(int j=pointer[i]; j<=tapePointer[i][1]; j++){
-                    cout<<tape[i][j]<<" ";
+                    cout<<tape[i][j];
+                    for(int k = 0; k< find_digit(j-mid);k++){
+                        cout<<" ";
+                    }
                 }
                 cout<<endl;
             }
             else if(pointer[i] > tapePointer[i][1]){
                 for(int j=tapePointer[i][0]; j<=pointer[i]; j++){
-                    cout<<tape[i][j]<<" ";
+                    cout<<tape[i][j];
+                    for(int k = 0; k< find_digit(j-mid);k++){
+                        cout<<" ";
+                    }
                 }
                 cout<<endl;
             }
             else{
                 for(int j=tapePointer[i][0]; j<=tapePointer[i][1]; j++){
-                    cout<<tape[i][j]<<" ";
+                    cout<<tape[i][j];
+                    for(int k = 0; k< find_digit(j-mid);k++){
+                        cout<<" ";
+                    }
                 }
                 cout<<endl;
             }
@@ -386,7 +407,10 @@ void TMid(string state,int step){
         }
         else{
             for(int j=tapePointer[i][0]; j<pointer[i]; j++){
-                cout<<"  ";
+                cout<<" ";
+                for(int k = 0; k< find_digit(j-mid);k++){
+                    cout<<" ";
+                }
             }
             cout<<"^"<<endl;
         }
@@ -494,7 +518,7 @@ void TM_run(string inputString){
 
     //check the state
     if(tapePointer[0][0] > tapePointer[0][1]){
-        cout<<"No stdout"<<endl;
+        cout<<endl;
     }
     else{
         if(verbose)cout<<"Result: ";
@@ -547,6 +571,7 @@ int main(int argc, char* argv[]){
     
     //参数检查
     if(!Parameter_Check(argc, argv)){
+        cout<<"Parameter Error"<<endl;
         cout<<"usage: fla [-h|--help] <pda> <input>"<<endl;
         cout<<"       fla [-v|--verbose] [-h|--help] <tm> <input>"<<endl;
         return 1;
@@ -558,7 +583,7 @@ int main(int argc, char* argv[]){
     if(s1=="--help" || s1=="-h"|| s2=="--help" || s2=="-h"){
         cout<<"usage: fla [-h|--help] <pda> <input>"<<endl;
         cout<<"       fla [-v|--verbose] [-h|--help] <tm> <input>"<<endl;
-        if(argc==2)return 0;
+        return 0;
     }
 
     if(s1=="--verbose" || s1=="-v"){
