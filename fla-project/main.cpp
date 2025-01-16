@@ -36,7 +36,7 @@ std::stack<char> PDAstack;
 int transitionNum=0;
 string transitions[10000][5];
 
-char tape[11][100000];
+char tape[11][100000]; 
 
 const int mid = 50000;
 
@@ -53,7 +53,7 @@ void clean_Annotation(string* s){//去掉注释以及末尾空格
     for(int i=len; i>=0; i--){
         if((*s)[i] == ' '){
             if(i==0) *s = "";
-            else *s = s->substr(0, i-1);
+            else *s = s->substr(0, i);
         }
         else{
             break;
@@ -85,6 +85,49 @@ void parse_char(string s, char* arr, int* num){
             arr[(*num)++] = Alphabet[0];
         }
     }
+}
+
+bool checkSyntaxErrors(const string& fileContent){
+    istringstream fileStream(fileContent);
+    string line;
+    bool have_checked_F = false;
+    while (getline(fileStream, line)) {
+        // 去掉注释和空格
+        clean_Annotation(&line);
+        // 在有#的情况下必须有{}
+        if(line.find("#") == 0 && line.find("#q0") == string::npos && line.find("#z0") == string::npos 
+        && line.find("#B") == string::npos && line.find("#N") == string::npos){
+            if(line.find("{") == string::npos || line.find("}") == string::npos){
+                return false;
+            }
+        }
+        //非转移函数必须有#
+        if((line.find("#F")== 0 && dealType==0)||(line.find("#N") == 0 && dealType==1)){
+            have_checked_F = true;
+        }
+        if(line.find("#") == string::npos && !have_checked_F && !line.empty()){
+            return false;
+        }
+        //非转移函数必须两两之间有逗号
+        if(line.find("#") == 0){
+            if(line.find("#S") == 0 || line.find("#G") == 0){
+            size_t start = line.find("{");
+            size_t end = line.find("}");
+            for(int i=start+2; i<end; i+=2){
+                if(line[i] != ','){
+                    return false;
+                }
+            }
+            }
+        }
+        //检查输入符号是否合法
+        if(line.find("#S") == 0 || line.find("#G") == 0){
+            if(line.find("*") == 0 || line.find("_") == 0){
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 bool parsePDA(string fileContent){
@@ -606,6 +649,11 @@ int main(int argc, char* argv[]){
     //读取输入字符串
     string inputString = argv[argc-1];
 
+    //检查是否有语法错误
+    if(!checkSyntaxErrors(fileContent)){
+        cout<<"syntax error"<<endl;
+        return 1;
+    }
 
     //PDA解析器
     if(dealType == 0)

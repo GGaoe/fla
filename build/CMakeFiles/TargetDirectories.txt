@@ -1,0 +1,3 @@
+/d/project-2024/build/CMakeFiles/fla.dir
+/d/project-2024/build/CMakeFiles/edit_cache.dir
+/d/project-2024/build/CMakeFiles/rebuild_cache.dir

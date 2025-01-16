@@ -54,6 +54,6 @@
 ## 编译测试
 
 将工程根目录直接打包为一个`.zip`文件
-Windows用户在命令行中输入：`curl.exe -X POST -F "file=@学号_姓名_FLA24proj.zip" http://114.212.84.155:5000/upload`
+Windows用户在命令行中输入：`curl.exe -X POST -F "file=@D:/project-2024/221240075_gaoge_FLA24proj.zip" http://114.212.84.155:5000/upload`
 MacOS/Linux用户在命令行中输入：`curl -X POST -F "file=@学号_姓名_FLA24proj.zip" http://114.212.84.155:5000/upload`
 以获取编译结果。**该页面仅用于测试工程编译可行性，不是正式提交入口！正式提交方式以讲义为准！**

@@ -9,7 +9,10 @@ if %errorlevel% neq 0 (
 )
 
 REM 运行生成的可执行文件
-REM .\fla.exe   -v ..\pda\anbn.pda aaabbb
-.\fla.exe -v ..\tm\palindrome_detector_2tapes.tm 100101001
+.\fla.exe  -v ..\pda\case.pda ((())())()()
+REM .\fla.exe    ..\pda\anbn.pda aaabbb
+REM  .\fla.exe  -v  ..\tm\palindrome_detector_2tapes.tm 100101001
+REM .\fla.exe  -v ..\tm\case3.tm aabbbaabbb
+REM .\fla.exe  -v ..\tm\case4.tm 11x111=111111
 REM 暂停以查看输出
 pause

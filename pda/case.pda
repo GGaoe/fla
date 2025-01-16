@@ -1,0 +1,14 @@
+
+#Q = {q0,q1,accept}
+#S = {(,)}
+#G = {0,z}
+#q0 = q0
+#z0 = z
+#F = {accept}
+
+q0 ( z q1 0z
+q0 _ z accept _
+q1 ( z q1 0z
+q1 ( 0 q1 00
+q1 ) 0 q1 _
+q1 _ z accept _
